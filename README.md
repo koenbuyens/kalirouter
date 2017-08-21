@@ -314,31 +314,41 @@ We can also use this to monitor communication of Windows applications by connect
 ## A Raspberry Pi Kali Router
 As we wanted a portable solution, we applied the above set-up on a Raspberry Pi. You can download a Raspber Pi Kali Linux image with the set-up [here](TODO).
 
-First, download the latest Kali Linux image for the raspberry Pi at [Offensive Security](https://www.offensive-security.com/kali-linux-arm-images/).
-This image is most likely compressed with ```xz```, as it ends with the ```xz``` file extension. Install the ```xz``` compression tool and use it to extract the image. If the Kali image is not compressed with xz (i.e. it has the ```img``` file extension, you can skip this step).
+First, we download the latest Kali Linux image for the raspberry Pi at [Offensive Security](https://www.offensive-security.com/kali-linux-arm-images/).
+This image is most likely compressed with ```xz```, as it ends with the ```xz``` file extension. We install the ```xz``` compression tool and use it to extract the image. If the Kali image is not compressed with xz (i.e. it has the ```img``` file extension, we can skip this step).
 
-As my only SD card reader is built-in to my MacOSX machine, the following instructions are for MacOSX. I will add the equivalent Ubuntu instructions later.
-
-```
+On MacOSX, this is as follows.
+```shell
 $ brew install xz
 $ xz -d file-to-extract.xz
 ```
 
-Second, flash the image to disk. We use the ```df``` program to identify the disks attached to our system.
+On Ubuntu, this is as follows.
+```shell
+$ apt-get install xz-utils
+$ xz -d file-to-extract.xz
 ```
+
+Second, flash the image to disk. We execute the ```df``` program twice to identify the disks attached to our system: first before inserting the SD card into the reader and then after inserting it into the reader.
+```shell
 $ df -h
 ```
-We then enter the SD card and execute the same command again. Note the filesystem name of the SD card (it is the one that was not there before). On MACOSX, it should look like ```/dev/disk2s1```.
+The filesystem name of the SD card is the one that was not there before. On MacOSX, it looks like ```/dev/disk2s1```. On Linux, it looks like ```/dev/sdb```.
 
-We unmount the partition so that we can write to it. As our flash card is the second disk (```/dev/disk2...```), we unmount it with the ```diskutil``` command (MacOSX).
+We unmount the partition so that we can write to it. On MacOSX, we unmount it with the ```diskutil``` command. As our flash card is the second disk (```/dev/disk2...```), we execute the following.
 
-```
+```shell
 $ sudo diskutil unmount /dev/disk2
 ```
 
-We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with the correct disk number and replace ```LocationOfKaliImage``` with the path to your Kali Linux machine.
-
+On Ubuntu, we unmount it with the ```umount``` command.
+```shell
+$ sudo umount /dev/sdb
 ```
+
+We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with the correct disk (i.e. ```/dev/sdb``` in my Kali machine) and replace ```LocationOfKaliImage``` with the path to your Kali Linux machine.
+
+```shell
 $ sudo dd bs=1m if=LocationOfKaliImage of=/dev/rdisk2
 ```
 
@@ -346,13 +356,13 @@ After completion, we insert the SD card into the Raspberry Pi, connect the Pi to
 
 We expand Kali to take the complete SD card with the ```gparted``` application. We could also have used ```resize2fs```.
 
-```
+```shell
 $ apt-get install gparted
 $ gparted
 ```
 
 We update the software of the device by running the following commands:
-```
+```shell
 $ apt-get update
 $ apt-get upgrade
 $ apt-get dist-upgrade
@@ -360,13 +370,13 @@ $ apt-get dist-upgrade
 
 We update the root password by executing ```passwd```.
 
-```
+```shell
 $ passwd root
 ```
 
 To communicate with our Raspberry Pi from our computer, we will use SSH. As it is not installed, we will install and enable it on boot as follows:
 
-```
+```shell
 $ apt-get install openssh-server
 $ update-rc.d -f ssh remove
 $ update-rc.d -f ssh defaults
@@ -374,7 +384,7 @@ $ update-rc.d -f ssh defaults
 
 We change the default keys as follows:
 
-```
+```shell
 $ cd /etc/ssh/
 $ mkdir insecure_old
 $ mv ssh_host* insecure_old
@@ -383,38 +393,46 @@ $ dpkg-reconfigure openssh-server
 
 We change the ```sshd_config``` file to allow our root user to authenticate. (Note, this is not secure; it is better to create a regular user).
 
-```
+```shell
 $ nano /etc/ssh/sshd_config
 ```
 
 We change the following line.
-```
+```shell
 PermitRootLogin without-password
 ```
 
 to this line instead:
-```
+```shell
 PermitRootLogin yes
 ```
 
 We save our changes and restart the openssh-server.
-```
+```shell
 $ service ssh restart
 $ update-rc.d -f ssh enable 2 3 4 5
 ```
 
 We want to install  ```net-tools``` so that we are able to use ```ifconfig```.
-```
+```shell
 $ apt-get install net-tools  
 ```
 
 We then check out our scripts on the raspberry Pi, connect our USB adapters, follow the instructions in the [Automation](#automation) section (use ```wlan1``` instead of ```wlan0```), and are ready to go.
+```shell
+$ git clone https://github.com/koenbuyens/kalirouter.git
+```
 
 ## Conclusion
 We transformed Kali into an intercepting router so that we can easily intercept communication between multiple devices.
 
 ## References
+The following links helped me creating a wired/wireless router in Kali Linux.
 - [https://www.psattack.com/articles/20160410/setting-up-a-wireless-access-point-in-kali/](https://www.psattack.com/articles/20160410/setting-up-a-wireless-access-point-in-kali/)
 - [https://cybergibbons.com/security-2/quick-and-easy-fake-wifi-access-point-in-kali/](https://cybergibbons.com/security-2/quick-and-easy-fake-wifi-access-point-in-kali/)
-- [https://help.ubuntu.com/community/NetworkConnectionBridge](https://help.ubuntu.com/community/NetworkConnectionBridge)
 - [https://ubuntuforums.org/showthread.php?t=716192](https://ubuntuforums.org/showthread.php?t=716192)
+- [https://help.ubuntu.com/community/NetworkConnectionBridge](https://help.ubuntu.com/community/NetworkConnectionBridge)
+- [https://wiki.archlinux.org/index.php/Internet_sharing#Configuration](https://wiki.archlinux.org/index.php/Internet_sharing#Configuration)
+- [https://wiki.archlinux.org/index.php/software_access_point#Bridge_setup](https://wiki.archlinux.org/index.php/software_access_point#Bridge_setup)
+- [https://wiki.debian.org/BridgeNetworkConnections#Manual_bridge_setup](https://wiki.debian.org/BridgeNetworkConnections#Manual_bridge_setup)
+- [https://help.ubuntu.com/lts/serverguide/network-configuration.html](https://help.ubuntu.com/lts/serverguide/network-configuration.html)

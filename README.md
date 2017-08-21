@@ -4,7 +4,11 @@ that
 - records all traffic with wireshark
 - sends HTTP and HTTPS traffic to an intercepting proxy, such as BurpSuite, running on another machine.
 
-Read [Setup](#setup) and [Automation](#automation) to configure your Kali Linux machine and run the scripts. Read [A Raspberry Pi Kali Router](#a-raspberry-pi-kali-router) if you want to run this on a Raspberry Pi. We assume that you own an [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
+Read [Setup](#setup) and [Automation](#automation) to configure your Kali Linux machine and run the scripts.
+
+Read [A Raspberry Pi Kali Router](#a-raspberry-pi-kali-router) if you want to run this on a Raspberry Pi.
+
+We assume that you own an [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
 
 # Intercepting IP traffic for any device, app, or application
 

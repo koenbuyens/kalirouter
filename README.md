@@ -398,7 +398,7 @@ We want to install  ```net-tools``` so that we are able to use ```ifconfig```.
 $ apt-get install net-tools  
 ```
 
-We then check out our scripts on the raspberry pi, following the instructions in the automation section, and connect our USB adapters, and are ready to go.
+We then check out our scripts on the raspberry pi, following the instructions in the [Automation](#automation) section, and connect our USB adapters, and are ready to go.
 
 ## Conclusion
 We transformed Kali into an intercepting router so that we can easily intercept communication between multiple devices.

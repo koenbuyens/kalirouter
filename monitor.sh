@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Interface that we want to monitor on
-WIRELESS_MONITOR_INTERFACE=wlan1
+WIRELESS_MONITOR_INTERFACE=wlan0
 WIRED_MONITOR_INTERFACE=eth1
 # Bridge between the above two interfaces (created on demand)
 BRIDGE_INTERFACE=br0
@@ -16,6 +16,10 @@ PROXYBOX=192.168.1.192
 # port on which the proxy is listening
 PROXYBOX_HTTP_PORT=80
 PROXYBOX_HTTPS_PORT=443
+# configuration directory
+CONFIGDIR=./conf
+# directory to which to write wireshark dumps
+DUMPDIR=./dumps
 
 # It monitors until we hit Ctrl c
 trap ctrl_c INT
@@ -37,6 +41,8 @@ rfkill unblock wlan
 # delete all addresses for wireless and wired
 ip addr flush dev $WIRELESS_MONITOR_INTERFACE
 ip addr flush dev $WIRED_MONITOR_INTERFACE
+# bring the ethernet interface up
+ip link set dev $WIRED_MONITOR_INTERFACE up
 # create bridge interface
 brctl addbr $BRIDGE_INTERFACE
 # add the wire to the bridge
@@ -46,11 +52,11 @@ ip link set dev $BRIDGE_INTERFACE up
 # bring up the wireless network interface
  ip link set dev $WIRELESS_MONITOR_INTERFACE up
 # configure it to be an access point (and add it to the bridge)
-hostapd ./hostapd.conf -B
+hostapd $CONFIGDIR/hostapd.conf -B
 ip addr add $MONITOR_MAIN dev br0
 
 # configure our DHCP server
-dnsmasq -C dnsmasq.conf -H dnsentries
+dnsmasq -C $CONFIGDIR/dnsmasq.conf
 
 # Add a forward rule for ipv4 traffic from MONITOR towards INTERNET
 sysctl -w net.ipv4.ip_forward=1
@@ -76,5 +82,5 @@ iptables -A FORWARD -s $MONITOR_NETWORK -d $PROXYBOX -i $BRIDGE_INTERFACE -o $IN
 
 
 # Configure tshark (wireshark) to write whatever passes over our monitored interface to a pcap file.
-tshark -i $BRIDGE_INTERFACE -w ../dumps/output.pcap -P
+tshark -i $BRIDGE_INTERFACE -w $DUMPDIR/output.pcap -P
 

@@ -35,7 +35,7 @@ We assume that you own an [ Ethernet LAN Network USB Adapter](https://www.amazon
 ## Introduction
 Many of us regularly sniff or intercept traffic coming from embedded devices, mobile apps, or windows applications. For devices or applications that are proxy-aware, interception of traffic is straightforward: we configure the application or device to use our [proxy](https://en.wikipedia.org/wiki/Proxy_server), such as [BurpSuite](https://portswigger.net/burp), and go on with our lives. For devices or applications that are not [proxy-aware](https://docstore.mik.ua/orelly/networking_2ndEd/fire/ch09_02.htm), intercepting traffic is  more challenging.
 
-In this article, we describe how to set up [Kali Linux](https://www.kali.org/) to sniff [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)/[UDP](https://en.wikipedia.org/wiki/User_Datagram_Protocol) traffic of any device, app, or application by configuring Kali as a proxy-aware router that can forward specific traffic to a transparent proxy on a different machine, such as HTTP(S) traffic to BurpSuite. Situations where an intercepting router is useful include complex scenarios where many devices and applications interact with each other, such as an embedded device that can be configured via mobile and windows applications and that communicates with a server on the Internet. To maximize reuse, we implement the above set-up on a Raspberry Pi and offer the disk image as download. 
+In this article, we describe how to set up [Kali Linux](https://www.kali.org/) to sniff [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)/[UDP](https://en.wikipedia.org/wiki/User_Datagram_Protocol) traffic of any device, app, or application by configuring Kali as a proxy-aware router that can forward specific traffic to a transparent proxy on a different machine, such as HTTP(S) traffic to BurpSuite. Situations where an intercepting router is useful include complex scenarios where many devices and applications interact with each other, such as an embedded device that can be configured via mobile and windows applications and that communicates with a server on the Internet. To maximize reuse, we implement the above set-up on a Raspberry Pi and offer the disk image as download.
 
 ## Setup
 We configure Kali Linux as a proxy-aware router. Clients, such as embedded devices or mobile apps, make connections to their servers as they normally would, but interesting packets (e.g. HTTP and HTTPS packets) are intercepted by our Kali Linux machine and redirected to a proxy server (e.g. BurpSuite). All traffic passing through our router is monitored with [Wireshark](https://www.wireshark.org/). Both our Kali Linux machine and BurpSuite act as a transparent proxy as the clients are not ware of their existence. The main advantage of this set-up is that it reduces the configuration of clients to a minimum. This setup is illustrated in the figure below.
@@ -241,7 +241,6 @@ To get up and running do the following.
 apt-get install dnsmasq hostapd bridge-utils iptables
 ```
 - Plugin the USB interfaces and discover their name by executing ```iptables -a```.
-- Modify
 - Modify the ```hostapd.conf``` file and point it to the correct interface for wireless (default ```wlan0```).
 - Modify the interface variables in the ```monitor.sh``` script file to point to the correct interfaces. ```WIRELESS_MONITOR_INTERFACE, WIRED_MONITOR_INTERFACE, INTERNET_INTERFACE``` point to the wireless USB adapter, the wired USB adapter, and Kali's VMWare interface respectively. Default is ```wlan0```, ```eth1```, and ```eth0```.
 - Modify the proxy variables in the ```monitor.sh``` script file to point to the IP address and port BurpSuite is running on. ```PROXYBOX```, ```PROXYBOX_HTTP_PORT```, and ```PROXYBOX_HTTPS_PORT``` refer to the IP address. HTTP port, and HTTPS port respectively. You **must** modify the IP address of where BurpSuite runs.
@@ -271,23 +270,23 @@ Before we can start monitoring mobile applications, we must add the certificate 
 
 For Android apps, we add the certificate to the trust store of Android as follows.
 1. We first go to the security settings.  
-<img src="pics/example_mobile_importcertandroid.png" width="200" />
+![Import a Certificate in Android - Security Settings](pics/example_mobile_importcertandroid.png)
 
 - We then install a certificate from the SD card.  
-<img src="pics/example_mobile_importcertandroid2.png" width="200" />
+![Import a Certificate in Android - Install from SD card](pics/example_mobile_importcertandroid2.png)
 
 - We select the certificate file.  
-<img src="pics/example_mobile_importcertandroid3.png" width="200" />
+![Import a Certificate in Android - Select the certificate file](pics/example_mobile_importcertandroid3.png)
 
 - Finally, we give it a name.  
-<img src="pics/example_mobile_importcertandroid4.png" width="200" />
+![Import a Certificate in Android - Give a Name to the Certificate](pics/example_mobile_importcertandroid4.png)
 
 After importing the certificate, we are ready to monitor an application.
 1. We connect the mobile device to our Monitor Network. We use the password that we had set-up in our ```hostapd``` configuration file.  
-<img src="pics/example_mobile_connect.png" width="200" />
+![Monitor Android Application - Connect to Monitor Network](pics/example_mobile_connect.png)
 
 - We then start the application that we want to monitor. The example below shows the Amtrak application.  
-<img src="pics/example_mobile_app.png" width="200" />
+![Monitor Android Application - Start the Application](pics/example_mobile_app.png)
 
 - We observe that BurpSuite receives HTTPS traffic from the Android App.  
 ![BurpSuite Receives HTTPS Traffic From the Android App](pics/example_mobile_burp.png)
@@ -295,7 +294,7 @@ After importing the certificate, we are ready to monitor an application.
 - We also observe that wireshark logs all traffic (in this case of the Facebook app).  
 ![Wireshark Logs All Traffic From the Android App](pics/example_mobile_wireshark.png)
 
-**Note:** For applications that implement [HSTS](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet), [HPKP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning) or [Certificate Pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning), we would need to [complete](https://finnwea.com/blog/bypassing-http-strict-transport-security-hsts) [additional steps](https://github.com/iSECPartners/Android-SSL-TrustKiller) (that are outside of the scope of this article).
+**Note:** To monitor applications that implement [HSTS](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet), [HPKP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning) or [Certificate Pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning), we would need to [complete](https://finnwea.com/blog/bypassing-http-strict-transport-security-hsts) [additional steps](https://github.com/iSECPartners/Android-SSL-TrustKiller) (that are outside of the scope of this article).
 
 ### Windows Applications
 We can also use this to monitor communication of Windows applications by connecting our Windows machine to the same network and adding BurpSuite's certificate to the Windows trust store.

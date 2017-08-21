@@ -314,6 +314,8 @@ We can also use this to monitor communication of Windows applications by connect
 ## A Raspberry Pi Kali Router
 As we wanted a portable solution, we applied the above set-up on a Raspberry Pi. You can download a Raspberry Pi Kali Linux image with the set-up [here](mailto:koen+raspberrypi@buyens.org). You most likely will need to apply the changes listed in the [Automation](https://github.com/koenbuyens/kalirouter#automation) Section, especially adding the MAC addresses of your cards to the Network Manager configuration file.
 
+![Our Raspberry pi Kali Set-up](pics/raspberrypisetup.jpg)
+
 First, we download the latest Kali Linux image for the raspberry Pi at [Offensive Security](https://www.offensive-security.com/kali-linux-arm-images/).
 This image is most likely compressed with ```xz```, as it ends with the ```xz``` file extension. We install the ```xz``` compression tool and use it to extract the image. If the Kali image is not compressed with ```xz``` (i.e. it has the ```img``` file extension, we can skip this step).
 

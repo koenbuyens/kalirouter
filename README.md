@@ -236,7 +236,7 @@ We go to the request handling tab, redirect traffic to port 443, force use of SS
 As we are lazy, we automate anything that we are going to do more than once. You can find the [configuration files](https://github.com/koenbuyens/kalirouter/tree/master/conf) and the [script](https://github.com/koenbuyens/kalirouter/blob/master/monitor.sh) on [my github](https://github.com/koenbuyens/kalirouter).
 
 To get up and running do the following.
-1. Obtain the code from github.
+- Obtain the code from github.
 ```shell
 $ git clone https://github.com/koenbuyens/kalirouter.git
 ```

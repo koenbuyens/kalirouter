@@ -12,7 +12,7 @@ MONITOR_NETWORK=172.16.0.0/12
 # The address we assign to our router, dhcp, and dns server.
 MONITOR_MAIN=172.16.0.1/12
 # PROXY BOX (e.g. burp). The ip address of the machine running a transparent proxy.
-PROXYBOX=192.168.1.192
+PROXYBOX=172.16.0.1
 # port on which the proxy is listening
 PROXYBOX_HTTP_PORT=80
 PROXYBOX_HTTPS_PORT=443
@@ -64,7 +64,7 @@ iptables -P FORWARD ACCEPT
 iptables -t nat -A POSTROUTING -o $INTERNET_INTERFACE -j MASQUERADE
 
 # redirect HTTP traffic to burp running on another machine; http://www.tldp.org/HOWTO/TransparentProxy-6.html
-# Note: this approach only works for HTTP/1.1. Read the URI above to make our approach more generic (but this requires 
+# Note: this approach only works for HTTP/1.1. Read the URI above to make our approach more generic (but this requires
 # send the packets to proxybox from our bridge interface. port is the port that we want to intercept. Do this for each port we want to intercept. Leave the port out to proxy all tcp traffic.
 # intercept http traffic
 iptables -t nat -A PREROUTING -i $BRIDGE_INTERFACE -p tcp --dport 80 -j DNAT --to-destination $PROXYBOX:$PROXYBOX_HTTP_PORT
@@ -83,4 +83,3 @@ iptables -A FORWARD -s $MONITOR_NETWORK -d $PROXYBOX -i $BRIDGE_INTERFACE -o $IN
 
 # Configure tshark (wireshark) to write whatever passes over our monitored interface to a pcap file.
 tshark -i $BRIDGE_INTERFACE -w $DUMPDIR/output.pcap -P
-

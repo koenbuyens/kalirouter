@@ -236,14 +236,23 @@ We go to the request handling tab, redirect traffic to port 443, force use of SS
 As we are lazy, we automate anything that we are going to do more than once. You can find the [configuration files](https://github.com/koenbuyens/kalirouter/tree/master/conf) and the [script](https://github.com/koenbuyens/kalirouter/blob/master/monitor.sh) on [my github](https://github.com/koenbuyens/kalirouter).
 
 To get up and running do the following.
-1. install the necessary dependencies:
+1. Obtain the code from github.
 ```shell
-apt-get install dnsmasq hostapd bridge-utils iptables
+$ git clone https://github.com/koenbuyens/kalirouter.git
 ```
-- Plugin the USB interfaces and discover their name by executing ```iptables -a```.
+- install the necessary dependencies:
+```shell
+apt-get install dnsmasq hostapd bridge-utils
+```
+- Plugin the USB interfaces and discover their names and MAC addresses by executing ```iptables -a```.
+- Tell the network-manager service that we will manage the interfaces ourselves by adding the adapters MAC addresses to the unmanaged-devices section of the ```/etc/NetworkManager/NetworkManager.conf``` file and restart the networking service by executing ```/etc/init.d/networking restart```.
+```
+[keyfile]
+unmanaged-devices=mac:d8:eb:97:b6:ce:12;mac:56:6b:a2:90:c4:b9
+```
 - Modify the ```hostapd.conf``` file and point it to the correct interface for wireless (default ```wlan0```).
 - Modify the interface variables in the ```monitor.sh``` script file to point to the correct interfaces. ```WIRELESS_MONITOR_INTERFACE, WIRED_MONITOR_INTERFACE, INTERNET_INTERFACE``` point to the wireless USB adapter, the wired USB adapter, and Kali's VMWare interface respectively. Default is ```wlan0```, ```eth1```, and ```eth0```.
-- Modify the proxy variables in the ```monitor.sh``` script file to point to the IP address and port BurpSuite is running on. ```PROXYBOX```, ```PROXYBOX_HTTP_PORT```, and ```PROXYBOX_HTTPS_PORT``` refer to the IP address. HTTP port, and HTTPS port respectively. You **must** modify the IP address of where BurpSuite runs.
+- Modify the proxy variables in the ```monitor.sh``` script file to point to the IP address and port BurpSuite is running on. ```PROXYBOX```, ```PROXYBOX_HTTP_PORT```, and ```PROXYBOX_HTTPS_PORT``` refer to the IP address. HTTP port, and HTTPS port respectively. The defaults are 172.16.0.1, 80, and 443. Modify the IP address if it runs on a different machine (in my case ```192.168.1.192```).
 - Execute the script
 ```bash
 $ ./monitor.sh

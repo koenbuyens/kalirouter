@@ -4,7 +4,7 @@ that
 - records all traffic with wireshark
 - sends HTTP and HTTPS traffic to an intercepting proxy, such as BurpSuite, running on another machine.
 
-Read [Setup](#setup) and [Automation](#automation) to configure your Kali machine and run the scripts.
+Read [Setup](#setup) and [Automation](#automation) to configure your Kali machine and run the scripts. We assume that you own an [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
 
 # Intercepting IP traffic for any device, app, or application
 
@@ -39,7 +39,7 @@ We configure Kali Linux as a proxy-aware router. Clients, such as embedded devic
 ![Setup](pics/setup.png)
 
 Before configuring our Kali Linux machine, we need to configure VMWare and our network interfaces as follows.
-- We connect our Kali Linux machine running within [VMWare](https://www.vmware.com/) to the network in bridged mode so that it is directly connected to the network the device/application/mobile phone would normally connect to.
+- We connect our Kali Linux machine running within [VMWare](https://www.vmware.com/) to the network in bridged mode so that it is directly connected to the network the device/application/mobile phone that we want to monitor would normally connect to.
 ![Set up VMware in Bridged Mode](pics/vmbridged.png)
 - We connect two adapters (Ethernet and WiFi) and give the USB connections to Kali. In the figure below, our adapters are the [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and the [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1). For WiFi, we could have used any adapter that is compatible with [Linux](http://www.wirelesshack.org/best-kali-linux-compatible-usb-adapter-dongles-2016.html), as long as it supports promiscuous mode.
 ![Connect the adapters to the VMware machine](pics/vmconnectdevices.png)
@@ -49,7 +49,7 @@ The subsequent sections elaborate how we configure our Kali Linux machine as a r
 ## Configuring Kali Linux as a Router
 Our Kali machine will route traffic from the plugged in USB network interfaces (Ethernet and WiFi) to its own Internet connection and vice versa. Creating a router consists of four main parts.
 - Setting up the **Ethernet layer** so that wired clients can connect to Kali's interface.
-- Setting up the **Wi-Fi data link layer**, so that wireless clients can connect to Kali's "software access point" and send/receive IP packets from/to Kali.  We use the ```hostapd``` application to do this. We bridge both the wired interface as well as the access point so that the machines connected to them are part of the same network.
+- Setting up the **Wi-Fi data link layer**, so that wireless clients can connect to Kali's "software access point" and send/receive IP packets from/to Kali.  We use the ```hostapd``` application to do this. We bridge both the wired interface as well as the access point so that the machines connected to them are part of the same network (so that we can monitor a multi-device set-up such as an embedded device connected via Ethernet communicating with a mobile application, a Windows application, and the Internet).
 - Setting up the **network configuration** on our Kali machine, so that it properly relays IP packets from its own Internet connection to its connected clients (and vice versa).
 - Adding **network services** such as DNS and DHCP so that clients get assigned IP addresses and can resolve domain names. We can use the DNS network service to redirect any domain name to a machine under our control.
 
@@ -135,6 +135,12 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP CCMP
 ```
 The first line is the interface that our wireless LAN will be created upon; i.e. the plugged in Wireless adapter ```wlan0```. We configure the name of the network (```ssid```) and its password (```wpa_passphrase```). We will use this later on when we connect our devices. The ```nl80211``` driver is the one used for the Atheros chipset. As we want our Ethernet and Wireless USB adapters to be part of the same network, we add them to the same bridge (```br0```). Our network is a ```g``` wireless network (```hw_mode```), as it is compatible with most devices that we want to monitor. All the other parameters are related to the configuration of WPA and logging. Refer to the [hostapd Linux documentation](http://wireless.kernel.org/en/users/Documentation/hostapd) for more information.
+
+[As there are some problems with the ```nl80211``` driver](https://askubuntu.com/questions/472794/hostapd-error-nl80211-could-not-configure-driver-mode), we execute the following commands to let our script use the wlan interfaces.
+```shell
+$ nmcli radio wifi off
+$ rfkill unblock wlan
+```
 
 After creating the wireless interface ```wlan0```, we bring it up.
 ```shell
@@ -399,7 +405,7 @@ We want to install  ```net-tools``` so that we are able to use ```ifconfig```.
 $ apt-get install net-tools  
 ```
 
-We then check out our scripts on the raspberry pi, following the instructions in the [Automation](#automation) section, and connect our USB adapters, and are ready to go.
+We then check out our scripts on the raspberry Pi, connect our USB adapters, follow the instructions in the [Automation](#automation) section (use ```wlan1``` instead of ```wlan0```), and are ready to go.
 
 ## Conclusion
 We transformed Kali into an intercepting router so that we can easily intercept communication between multiple devices.

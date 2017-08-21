@@ -4,7 +4,7 @@ that
 - records all traffic with wireshark
 - sends HTTP and HTTPS traffic to an intercepting proxy, such as BurpSuite, running on another machine.
 
-Read [Setup](#setup) and [Automation](#automation) to configure your Kali machine and run the scripts. We assume that you own an [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
+Read [Setup](#setup) and [Automation](#automation) to configure your Kali Linux machine and run the scripts. We assume that you own an [Ethernet LAN Network Adapter ASIX AX88179](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter Atheros UB91C](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
 
 # Intercepting IP traffic for any device, app, or application
 
@@ -34,7 +34,7 @@ Many of us regularly sniff or intercept traffic coming from embedded devices, mo
 In this article, we describe how to set up [Kali Linux](https://www.kali.org/) to sniff [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)/[UDP](https://en.wikipedia.org/wiki/User_Datagram_Protocol) traffic of any device, app, or application by configuring Kali as a proxy-aware router that can forward specific traffic to a transparent proxy on a different machine, such as HTTP(S) traffic to BurpSuite. To maximize reuse, we implement the above set-up on a Raspberry Pi and offer the disk image as download.
 
 ## Setup
-We configure Kali Linux as a proxy-aware router. Clients, such as embedded devices or mobile apps, make connections to their servers as they normally would, but interesting packets (e.g. HTTP and HTTPS packets) are intercepted by our Kali Linux machine and redirected to a proxy server (e.g. BurpSuite). All traffic passing through our router is monitored with [Wireshark](https://www.wireshark.org/). Both our Kali machine and BurpSuite act as a transparent proxy as the clients are not ware of their existence. The main advantage of this set-up is that it reduces the configuration of clients to a minimum. This setup is illustrated in the figure below.
+We configure Kali Linux as a proxy-aware router. Clients, such as embedded devices or mobile apps, make connections to their servers as they normally would, but interesting packets (e.g. HTTP and HTTPS packets) are intercepted by our Kali Linux machine and redirected to a proxy server (e.g. BurpSuite). All traffic passing through our router is monitored with [Wireshark](https://www.wireshark.org/). Both our Kali Linux machine and BurpSuite act as a transparent proxy as the clients are not ware of their existence. The main advantage of this set-up is that it reduces the configuration of clients to a minimum. This setup is illustrated in the figure below.
 
 ![Setup](pics/setup.png)
 
@@ -47,13 +47,13 @@ Before configuring our Kali Linux machine, we need to configure VMWare and our n
 The subsequent sections elaborate how we configure our Kali Linux machine as a router and how we monitor devices and applications by connecting them to the Kali Linux router.
 
 ## Configuring Kali Linux as a Router
-Our Kali machine will route traffic from the plugged in USB network interfaces (Ethernet and WiFi) to its own Internet connection and vice versa. Creating a router consists of four main parts.
+Our Kali Linux machine will route traffic from the plugged in USB network interfaces (Ethernet and WiFi) to its own Internet connection and vice versa. Creating a router consists of four main parts.
 - Setting up the **Ethernet layer** so that wired clients can connect to Kali's interface.
 - Setting up the **Wi-Fi data link layer**, so that wireless clients can connect to Kali's "software access point" and send/receive IP packets from/to Kali.  We use the ```hostapd``` application to do this. We bridge both the wired interface as well as the access point so that the machines connected to them are part of the same network (so that we can monitor a multi-device set-up such as an embedded device connected via Ethernet communicating with a mobile application, a Windows application, and the Internet).
-- Setting up the **network configuration** on our Kali machine, so that it properly relays IP packets from its own Internet connection to its connected clients (and vice versa).
+- Setting up the **network configuration** on our Kali Linux machine, so that it properly relays IP packets from its own Internet connection to its connected clients (and vice versa).
 - Adding **network services** such as DNS and DHCP so that clients get assigned IP addresses and can resolve domain names. We can use the DNS network service to redirect any domain name to a machine under our control.
 
-Before we execute the aforementioned steps, we will need to figure out what interfaces the adapters show up as. To do so, we execute ```ifconfig``` on our Kali machine before and after we connect the adapters.
+Before we execute the aforementioned steps, we will need to figure out what interfaces the adapters show up as. To do so, we execute ```ifconfig``` on our Kali Linux machine before and after we connect the adapters.
 ```shell
 $ ifconfig -a
 ```
@@ -74,7 +74,7 @@ $ /etc/init.d/networking restart
 ```
 
 ### Ethernet
-Before we create our monitoring network, we select an appropriate network and network mask. Using a different network range than the one of the network our Kali machine connects to (via `eth0`) ensures that the IP addresses of our monitored devices do not clash with IP addresses used on the main network. We select the ```172.16.0.0/12``` network, as our main network interface (```eth0```) typically receives a ```10.0.0.0/8``` (corporate) or a ```192.168.0.0/16``` (home) network address.
+Before we create our monitoring network, we select an appropriate network and network mask. Using a different network range than the one of the network our Kali Linux machine connects to (via `eth0`) ensures that the IP addresses of our monitored devices do not clash with IP addresses used on the main network. We select the ```172.16.0.0/12``` network, as our main network interface (```eth0```) typically receives a ```10.0.0.0/8``` (corporate) or a ```192.168.0.0/16``` (home) network address.
 
 As we want our wireless and wired network to be part of the same network, we create a bridge between them with the [```bridge-utils```](https://help.ubuntu.com/community/NetworkConnectionBridge) tool.
 ```shell
@@ -96,7 +96,7 @@ We bring the bridge interface ```br0``` up.
 ```shell
 $ ip link set dev br0 up
 ```
-We assign it an IP address in the network that we selected. As it is a gateway, we chose  ```172.16.0.1```.
+We assign it an IP address in the network that we selected. As it is a gateway for our monitored devices, we chose  ```172.16.0.1```.
 ```shell
 $ ip addr add 172.16.0.1/12 dev br0
 ```
@@ -191,14 +191,14 @@ As all traffic between devices on our monitor network passes via the bridge inte
 $ tshark -i br0 -w ./output.pcap -P
 ```
 
-Typically, we also want to intercept traffic and thus require a few more ```iptables``` rules that redirect HTTP/1.1 and HTTPS traffic to our intercepting proxy (BurpSuite) rather than the actual server. (For other protocols, including HTTP/1.0, refer to [http://www.tldp.org/HOWTO/TransparentProxy-6.html](http://www.tldp.org/HOWTO/TransparentProxy-6.html).)
+Typically, we also want to intercept traffic and thus require a few more ```iptables``` rules that redirect HTTP/1.1 and HTTPS traffic to our intercepting proxy (BurpSuite) rather than the actual server. For other protocols, including HTTP/1.0, refer to the second method of [http://www.tldp.org/HOWTO/TransparentProxy-6.html](http://www.tldp.org/HOWTO/TransparentProxy-6.html).
 
 The first rule intercepts tcp packets (```-p tcp```) on ports 80 and 443 (HTTP and HTTPS; ```--dport 80``` and ```--dport 443```) and sends it to BurpSuite (```--to-destination burpip:burp_http_port``` and ```--to-destination burpip:burp_https_port```).
 ```shell
 $ iptables -t nat -A PREROUTING -i br0 -p tcp --dport 80 -j DNAT --to-destination burpip:burp_http_port
 $ iptables -t nat -A PREROUTING -i br0 -p tcp --dport 443 -j DNAT --to-destination burpip:burp_https_port
 ```
-The second rule ensures that the reply gets sent back through the Kali machine, instead of directly to the client that is being monitored (important!). The rule uses masquerade as the Kali machine receives a dynamic IP address.
+The second rule ensures that the reply gets sent back through the Kali Linux machine, instead of directly to the client that is being monitored (important!). The rule uses masquerade as the Kali Linux machine receives a dynamic IP address.
 ```shell
 $ iptables -t nat -A POSTROUTING -o eth0 -s 172.16.0.0/12 -d burpip -j MASQUERADE
 ```
@@ -229,7 +229,7 @@ We go to the request handling tab, redirect traffic to port 443, force use of SS
 
 
 ## Automation
-As we are lazy, we automate anything that we are going to do more than once. You can find the configuration files and the script on my github. (TODO links)
+As we are lazy, we automate anything that we are going to do more than once. You can find the [configuration files](https://github.com/koenbuyens/kalirouter/tree/master/conf) and the [script](https://github.com/koenbuyens/kalirouter/blob/master/monitor.sh) on [my github](https://github.com/koenbuyens/kalirouter).
 
 To get up and running do the following.
 1. install the necessary dependencies:
@@ -333,7 +333,7 @@ We unmount the partition so that we can write to it. As our flash card is the se
 $ sudo diskutil unmount /dev/disk2
 ```
 
-We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with the correct disk number and replace ```LocationOfKaliImage``` with the path to your Kali machine.
+We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with the correct disk number and replace ```LocationOfKaliImage``` with the path to your Kali Linux machine.
 
 ```
 $ sudo dd bs=1m if=LocationOfKaliImage of=/dev/rdisk2

@@ -10,7 +10,7 @@ Read [A Raspberry Pi Kali Router](#a-raspberry-pi-kali-router) if you want to ru
 
 We assume that you own an [ Ethernet LAN Network USB Adapter](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
 
-# Intercepting IP traffic for any device, app, or application
+# Intercepting IP traffic originating from any device, app, or application
 
 - [TL;DR](#tldr)
 - [Intercepting IP traffic for any device, app, or application](#intercepting-ip-traffic-for-any-device-app-or-application)

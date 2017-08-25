@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# based on https://www.psattack.com/articles/20160410/setting-up-a-wireless-access-point-in-kali/
 # Interface that we want to monitor on
 WIRELESS_MONITOR_INTERFACE=wlan0
 WIRED_MONITOR_INTERFACE=eth1

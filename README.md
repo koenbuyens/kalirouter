@@ -344,7 +344,7 @@ Second, flash the image to disk. We execute the ```df``` program twice to identi
 ```shell
 $ df -h
 ```
-The filesystem name of the SD card is the one that was not there before. On MacOSX, it looks like ```/dev/disk2s1```. On Linux, it looks like ```/dev/sdb```.
+The filesystem name of the SD card is the one that was not there before. On MacOSX, it looks like ```/dev/disk2s1```. On Ubuntu, it looks like ```/dev/sdb```.
 
 We unmount the partition so that we can write to it. On MacOSX, we unmount it with the ```diskutil``` command. As our flash card is the second disk (```/dev/disk2...```), we execute the following.
 
@@ -357,13 +357,13 @@ On Ubuntu, we unmount it with the ```umount``` command.
 $ sudo umount /dev/sdb
 ```
 
-We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with the correct disk (i.e. ```/dev/sdb``` in my Kali machine) and replace ```LocationOfKaliImage``` with the path to your Kali Linux machine.
+We copy Kali to the SD card with the ```dd``` command. Replace ```rdisk2``` with the correct disk (i.e. ```/dev/sdb``` in my Kali machine) and replace ```LocationOfKaliImage``` with the path to your Kali Linux machine.
 
 ```shell
 $ sudo dd bs=1m if=LocationOfKaliImage of=/dev/rdisk2
 ```
 
-We expand Kali to take the complete SD card with the ```gparted``` application running on our Linux machine.
+We expand Kali to take the complete SD card with the ```gparted``` application running on our Ubuntu machine.
 
 ```shell
 $ apt-get install gparted

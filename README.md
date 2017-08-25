@@ -363,14 +363,26 @@ We copy Kali to the SDCard with the ```dd``` command. Replace ```rdisk2``` with 
 $ sudo dd bs=1m if=LocationOfKaliImage of=/dev/rdisk2
 ```
 
-After completion, we insert the SD card into the Raspberry Pi, connect the Pi to a screen, attach a keyboard and mouse, and connect it to our network with an Ethernet cable. We plug in the power source to boot into Kali Linux for the first time and we login with the username "```root```" and the password ```"toor"```.
-
-We expand Kali to take the complete SD card with the ```gparted``` application. We could also have used ```resize2fs```.
+We expand Kali to take the complete SD card with the ```gparted``` application running on our Linux machine.
 
 ```shell
 $ apt-get install gparted
 $ gparted
 ```
+
+We select the SD card (typically ```/dev/sdb```). Observe that there is empty space after the data partition. We right click on the one that contains data (light yellow, typically ```/dev/sdb2```) and click ```Resize/Move```.
+
+![Select the SD card and click resize.](pics/resizepartition.png)
+
+In the resize dialog box, we change the ```Free Space Following``` to zero, and click ```Resize```. In our case, we expand our kali partition to about 30GB.
+
+![Select the SD card and click resize.](pics/resizepartition2.png)
+
+We right click on the pending operation (at the bottom of gparted), select ```Apply All Operations```.
+
+![Select the SD card and click resize.](pics/resizepartition3.png)
+
+After completion, we eject the SD card and insert it into the Raspberry Pi, connect the Pi to a screen, attach a keyboard and mouse, and connect it to our network with an Ethernet cable. We plug in the power source to boot into Kali Linux for the first time and we login with the username "```root```" and the password ```"toor"```.
 
 We update the software of the device by running the following commands:
 ```shell
@@ -447,3 +459,4 @@ The following links helped me creating a wired/wireless router in Kali Linux.
 - [https://wiki.archlinux.org/index.php/software_access_point#Bridge_setup](https://wiki.archlinux.org/index.php/software_access_point#Bridge_setup)
 - [https://wiki.debian.org/BridgeNetworkConnections#Manual_bridge_setup](https://wiki.debian.org/BridgeNetworkConnections#Manual_bridge_setup)
 - [https://help.ubuntu.com/lts/serverguide/network-configuration.html](https://help.ubuntu.com/lts/serverguide/network-configuration.html)
+- [http://www.tldp.org/HOWTO/TransparentProxy-6.html](http://www.tldp.org/HOWTO/TransparentProxy-6.html)

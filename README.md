@@ -3,14 +3,13 @@ This repository contains code to turn your Kali Linux machine into a router
 that
 - records all traffic with wireshark
 - sends HTTP and HTTPS traffic to an intercepting proxy, such as BurpSuite, running on another machine.
+This setup is only appropriate in a lab setting where you want to learn how a device works. 
 
 Read [Setup](#setup) and [Automation](#automation) to configure your Kali Linux machine and run the scripts.
 
 Read [A Raspberry Pi Kali Router](#a-raspberry-pi-kali-router) if you want to run this on a Raspberry Pi.
 
-This setup is only appropriate in a lab setting where you want to learn how a device works. 
-
-We assume that you own an [ Ethernet LAN Network USB Adapter](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1).
+We assume that you own an [ Ethernet LAN Network USB Adapter](https://www.amazon.com/Plugable-Gigabit-Ethernet-Network-Adapter/dp/B00AQM8586) and a [wireless B/G/N USB adapter](https://www.amazon.com/gp/product/B004Y6MIXS/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1). Any card (USB or built-in) supported by Linux can be used.
 
 # Intercepting IP traffic originating from any device, app, or application
 
